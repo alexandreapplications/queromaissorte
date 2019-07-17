@@ -82,5 +82,41 @@ module.exports = () => {
         });
     });
   };
+  this.getInfo = () => {
+    return new Promise((resolve, reject) => {
+      var collection = db.collection(dbCollectionName);
+      var firstPromise = collection
+        .orderBy("id", "asc")
+        .limit(1)
+        .select("id")
+        .get();
+      var lastPromise = collection
+        .orderBy("id", "desc")
+        .limit(1)
+        .select("id")
+        .get();
+      Promise.all([firstPromise, lastPromise])
+        .then(result => {
+          var first = 0;
+          var last = 0;
+          result[0].forEach(value => {
+            first = value.data().id;
+          });
+          result[1].forEach(value => {
+            last = value.data().id;
+          });
+          response = {
+            first,
+            last
+          };
+          resolve(response);
+          return response;
+        })
+        .catch(reason => {
+          console.error(`Erro ao executar a promise ${reason}`);
+          reject(reason);
+        });
+    });
+  };
   return this;
 };

@@ -70,5 +70,17 @@ module.exports = function() {
         responseUtil.errorResponse(res, null, reason);
       });
   };
+
+  this.getInfo = (req, res) => {
+    service
+      .getInfo()
+      .then(value => {
+        responseUtil.okResponse(res, null, value);
+        return true;
+      })
+      .catch(reason => {
+        responseUtil.errorResponse(res, null, reason);
+      });
+  };
   return this;
 };

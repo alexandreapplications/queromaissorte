@@ -139,6 +139,10 @@ module.exports = () => {
     );
   };
 
+  this.getInfo = () => {
+    return lotoFacilModel.getInfo();
+  };
+
   this.getSingle = id => lotoFacilModel.getSingle(id);
   return this;
 };
