@@ -1,5 +1,5 @@
 import React from "react";
-
+import { Link as RouterLink } from "react-router-dom";
 import clsx from "clsx";
 import { makeStyles, useTheme } from "@material-ui/core/styles";
 import Drawer from "@material-ui/core/Drawer";
@@ -16,14 +16,17 @@ import ChevronRightIcon from "@material-ui/icons/ChevronRight";
 import ListItem from "@material-ui/core/ListItem";
 import ListItemIcon from "@material-ui/core/ListItemIcon";
 import ListItemText from "@material-ui/core/ListItemText";
-import InboxIcon from "@material-ui/icons/MoveToInbox";
-import MailIcon from "@material-ui/icons/Mail";
+import DashboardIcon from "@material-ui/icons/Dashboard";
+import ListIcon from "@material-ui/icons/List";
+import BusinessIcon from "@material-ui/icons/Business";
+import Hidden from "@material-ui/core/Hidden";
 
 import { Route, Switch } from "react-router-dom";
 import HomePage from "./Home/HomePage";
 import AboutPage from "./About/AboutPage";
 import PageNotFound from "./PageNotFound";
 import LotofacilPage from "./Loteria/Lotofacil/LotofacilPage";
+import { Button } from "@material-ui/core";
 
 const drawerWidth = 240;
 
@@ -80,6 +83,12 @@ const useStyles = makeStyles(theme => ({
       duration: theme.transitions.duration.enteringScreen
     }),
     marginLeft: 0
+  },
+  title: {
+    flexGrow: 1
+  },
+  drawerTitle: {
+    fontWeight: "bold"
   }
 }));
 function App() {
@@ -127,9 +136,22 @@ function App() {
           >
             <MenuIcon />
           </IconButton>
-          <Typography variant="h6" noWrap>
-            Persistent drawer
-          </Typography>
+          <Hidden mdDown={open}>
+            <Typography variant="h6" noWrap className={classes.title}>
+              Quero minha sorte
+            </Typography>
+          </Hidden>
+          <Hidden mdDown={true}>
+            <Button color="inherit" component={RouterLink} to="/">
+              Home
+            </Button>
+            <Button color="inherit" component={RouterLink} to="/lotofacil">
+              Lotofácil
+            </Button>
+            <Button color="inherit" component={RouterLink} to="/about">
+              Sobre
+            </Button>
+          </Hidden>
         </Toolbar>
       </AppBar>
       <Drawer
@@ -141,8 +163,11 @@ function App() {
           paper: classes.drawerPaper
         }}
       >
-        <div className={classes.drawerHeader}>
-          <IconButton onClick={handleDrawerClose}>
+        <div className={classes.drawerHeader} onClick={handleDrawerClose}>
+          <Typography className={classes.drawerTitle} noWrap>
+            Quero minha sorte
+          </Typography>
+          <IconButton>
             {theme.direction === "ltr" ? (
               <ChevronLeftIcon />
             ) : (
@@ -152,25 +177,27 @@ function App() {
         </div>
         <Divider />
         <List>
-          {["Inbox", "Starred", "Send email", "Drafts"].map((text, index) => (
-            <ListItem button key={text}>
-              <ListItemIcon>
-                {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
-              </ListItemIcon>
-              <ListItemText primary={text} />
-            </ListItem>
-          ))}
+          <ListItem button key="1" component={RouterLink} to="/">
+            <ListItemIcon>
+              <DashboardIcon />
+            </ListItemIcon>
+            <ListItemText>Principal</ListItemText>
+          </ListItem>
+          <ListItem button key="2" component={RouterLink} to="/about">
+            <ListItemIcon>
+              <ListIcon />
+            </ListItemIcon>
+            <ListItemText>Sobre</ListItemText>
+          </ListItem>
         </List>
         <Divider />
         <List>
-          {["All mail", "Trash", "Spam"].map((text, index) => (
-            <ListItem button key={text}>
-              <ListItemIcon>
-                {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
-              </ListItemIcon>
-              <ListItemText primary={text} />
-            </ListItem>
-          ))}
+          <ListItem button key="3" component={RouterLink} to="/lotofacil">
+            <ListItemIcon>
+              <BusinessIcon />
+            </ListItemIcon>
+            <ListItemText>Lotofacil</ListItemText>
+          </ListItem>
         </List>
       </Drawer>
       <main

@@ -22,7 +22,8 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-function Header() {
+function Header(props) {
+  const { width } = props;
   const classes = useStyles();
 
   const [anchorEl, setAnchorEl] = React.useState(null);
