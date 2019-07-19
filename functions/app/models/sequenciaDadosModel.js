@@ -1,26 +1,15 @@
 const admin = require("firebase-admin");
 const db = admin.firestore();
+const modelHelper = require("../@common/models/modelHelper");
 
 module.exports = () => {
-  this.getAll = loteria => {
-    return new Promise((resolve, reject) => {
-      db.collection(`sequencia_${loteria}_dados`)
-        .get()
-        .then(snapshot => {
-          if (snapshot.exists) {
-            resolve(snapshot.data());
-            return snapshot.data();
-          } else {
-            resolve(null);
-            return null;
-          }
-        })
-        .catch(reason => {
-          console.error(reason);
-          reject(reason);
-        });
-    });
-  };
+  this.getAll = loteria =>
+    modelHelper.getList(db.collection(`sequencia_${loteria}_dados`));
+
+  this.getSingle = (loteria, sequencia) =>
+    modelHelper.getSingle(
+      db.collection(`sequencia_${loteria}_dados`).doc(sequencia)
+    );
 
   this.update = (loteria, sequencia, record) => {
     return new Promise(resolve => {

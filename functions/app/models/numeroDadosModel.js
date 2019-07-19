@@ -1,27 +1,13 @@
 const admin = require("firebase-admin");
 const db = admin.firestore();
+const modelHelper = require("../@common/models/modelHelper");
 
 module.exports = () => {
-  this.getAll = loteria => {
-    return new Promise((resolve, reject) => {
-      db.collection(`numero_${loteria}_dados`)
-        .orderBy("id")
-        .get()
-        .then(snapshot => {
-          if (snapshot.exists) {
-            resolve(snapshot.data());
-            return snapshot.data();
-          } else {
-            resolve(null);
-            return null;
-          }
-        })
-        .catch(reason => {
-          console.error(reason);
-          reject(reason);
-        });
-    });
-  };
+  this.getAll = loteria =>
+    modelHelper.getList(db.collection(`numero_${loteria}_dados`).orderBy("id"));
+
+  this.getSingle = (loteria, numero) =>
+    modelHelper.getSingle(db.collection(`numero_${loteria}_dados`).doc(numero));
 
   this.update = (loteria, numero, record) => {
     return new Promise(resolve => {
@@ -42,6 +28,7 @@ module.exports = () => {
       return true;
     });
   };
+
   this.getEmptyRecord = () => {
     const numeros = [];
     for (var i = 0; i < 25; i++) {

@@ -1,4 +1,6 @@
 const exceptionUtil = require("../@common/exceptionsUtil");
+const modelHelper = require("../@common/models/modelHelper");
+
 module.exports = () => {
   const admin = require("firebase-admin");
   const db = admin.firestore();
@@ -40,48 +42,14 @@ module.exports = () => {
       throw error;
     }
   }
-  this.getList = (initialRecord, recordCount, initialId, finalId) => {
-    return new Promise((resolve, reject) => {
-      var collection = getCollection(
-        initialRecord,
-        recordCount,
-        initialId,
-        finalId
-      );
-      collection
-        .get()
-        .then(snapshot => {
-          var result = [];
-          snapshot.forEach(record => {
-            result.push(record.data());
-          });
-          resolve(result);
-          return result;
-        })
-        .catch(reason => {
-          reject(reason);
-        });
-    });
-  };
-  this.getSingle = id => {
-    return new Promise((resolve, reject) => {
-      db.collection(dbCollectionName)
-        .doc(id)
-        .get()
-        .then(snapshot => {
-          if (snapshot.exists) {
-            resolve(snapshot.data());
-            return snapshot.data();
-          } else {
-            reject(exceptionUtil.RECORDNOTFOUND);
-            return exceptionUtil.RECORDNOTFOUND;
-          }
-        })
-        .catch(reason => {
-          reject(reason);
-        });
-    });
-  };
+  this.getList = (initialRecord, recordCount, initialId, finalId) =>
+    modelHelper.getList(
+      getCollection(initialRecord, recordCount, initialId, finalId)
+    );
+
+  this.getSingle = id =>
+    modelHelper.getSingle(db.collection(dbCollectionName).doc(id));
+
   this.getInfo = () => {
     return new Promise((resolve, reject) => {
       var collection = db.collection(dbCollectionName);

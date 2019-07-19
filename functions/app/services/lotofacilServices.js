@@ -167,7 +167,7 @@ module.exports = () => {
         var numeros = refresh
           ? numeroModel.getEmptyRecord()
           : (await numeroModel.getAll(LOTERIA)) || numeroModel.getEmptyRecord();
-        //# endregion
+        //#endregion
 
         //#region Processamento
         listRecords.forEach(element => {
@@ -202,7 +202,9 @@ module.exports = () => {
           );
         }
         await Promise.all(sequenciaUpdatePromises);
-        //# endregion
+        //#endregion
+
+        //#region Update Jogos
         var numeroDadosUpdatePromises = numeros.map(value =>
           numeroDadosModel.update(LOTERIA, value.id.toString(), {
             jogos: value.jogos
@@ -216,7 +218,9 @@ module.exports = () => {
           return numeroModel.update(LOTERIA, value.id.toString(), value);
         });
         await Promise.all(numeroUpdatePromises);
+        //#endregion
 
+        //#region Update dados
         for (value in statistics.numeros) {
           statistics.numeros[value].percentual =
             (statistics.numeros[value].qtde / statistics.qtde) * 100;
@@ -227,6 +231,7 @@ module.exports = () => {
           statistics
         );
         resolve(result);
+        //#endregion
         return result;
       } catch (error) {
         console.error(error);

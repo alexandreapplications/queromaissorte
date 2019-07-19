@@ -3,7 +3,7 @@ const responseUtil = require("../@common/responseUtil");
 module.exports = () => {
   this.getStatistics = (req, res) => {
     service
-      .getStatistics(req.params.loteria)
+      .get(req.params.loteria)
       .then(value => {
         responseUtil.okResponse(res, null, value);
         return true;

@@ -15,6 +15,8 @@ admin.initializeApp({
 
 const lotofacilRouter = require("./app/routes/lotofacilRouter");
 const statisticsRouter = require("./app/routes/statisticsRouter");
+const numeroRouter = require("./app/routes/numeroRouter");
+const sequenciaRouter = require("./app/routes/sequenciaRouter");
 
 const express = require("express");
 
@@ -35,3 +37,5 @@ function setupRoute(route) {
 
 exports.lotofacil = functions.https.onRequest(setupRoute(lotofacilRouter));
 exports.statistics = functions.https.onRequest(setupRoute(statisticsRouter));
+exports.numeros = functions.https.onRequest(setupRoute(numeroRouter));
+exports.sequencias = functions.https.onRequest(setupRoute(sequenciaRouter));
