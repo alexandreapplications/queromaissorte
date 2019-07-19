@@ -1,9 +1,9 @@
 const express = require("express");
 const router = express.Router();
-const Controller = require("../controllers/lotofacilController");
-const controller = new Controller();
-router.get("/", controller.getList);
-router.get("/getInfo", controller.getInfo);
-router.get("/:id", controller.getSingle);
-router.post("/", controller.uploadFile);
+const lotofacilController = require("../controllers/lotofacilController")();
+router.get("/", lotofacilController.getList);
+router.get("/getInfo", lotofacilController.getInfo);
+router.get("/:id", lotofacilController.getSingle);
+router.post("/", lotofacilController.uploadFile);
+router.post("/updateStatistics", lotofacilController.updateStatistics);
 module.exports = router;

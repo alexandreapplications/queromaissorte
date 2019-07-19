@@ -82,5 +82,17 @@ module.exports = function() {
         responseUtil.errorResponse(res, null, reason);
       });
   };
+
+  this.updateStatistics = (req, res) => {
+    service
+      .updateStatistics(req.query.refresh)
+      .then(value => {
+        responseUtil.okResponse(res, null, value);
+        return true;
+      })
+      .catch(reason => {
+        responseUtil.errorResponse(res, null, reason);
+      });
+  };
   return this;
 };

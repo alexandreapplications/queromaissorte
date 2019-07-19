@@ -14,6 +14,7 @@ admin.initializeApp({
 // [END setup firebase]
 
 const lotofacilRouter = require("./app/routes/lotofacilRouter");
+const statisticsRouter = require("./app/routes/statisticsRouter");
 
 const express = require("express");
 
@@ -33,3 +34,4 @@ function setupRoute(route) {
 }
 
 exports.lotofacil = functions.https.onRequest(setupRoute(lotofacilRouter));
+exports.statistics = functions.https.onRequest(setupRoute(statisticsRouter));

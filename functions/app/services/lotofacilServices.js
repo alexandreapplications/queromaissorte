@@ -1,7 +1,12 @@
 const cheerio = require("cheerio");
 const moment = require("moment");
 const lotoFacilModel = require("../models/lotofacilModel")();
-
+const statisticsModel = require("../models/statisticsModel")();
+const sequenciaModel = require("../models/sequenciaModel")();
+const numeroModel = require("../models/numeroModel")();
+const sequenciaDadosModel = require("../models/sequenciaDadosModel")();
+const numeroDadosModel = require("../models/numeroDadosModel")();
+const LOTERIA = "lotofacil";
 module.exports = () => {
   this.getKeys = () => {
     return lotoFacilModel.getList();
@@ -43,7 +48,6 @@ module.exports = () => {
         { name: "estimativa_Premio", type: "decimal" },
         { name: "valor_Acumulado_Especial", type: "decimal" }
       ];
-      const regexValue = /\d+/g;
       var dados = [];
       var numeros = [];
       var bolas = [];
@@ -70,7 +74,7 @@ module.exports = () => {
                   case "date":
                     columnValue = moment(
                       $(elementItem).text(),
-                      "dd/MM/yyyy"
+                      "DD/MM/YYYY"
                     ).toDate();
                     break;
                   case "decimal":
@@ -113,18 +117,11 @@ module.exports = () => {
       });
       Promise.all(promises)
         .then(result => {
-          // var alreadyExists = 0;
-          // var inserted = 0;
-          // result.forEach(element => {
-          //   if (element.alreadyExists) alreadyExists++;
-          //   else inserted++;
-          // });
-          // resolve({ success: true, inserted, alreadyExists });
           resolve({ success: true });
           return true;
         })
         .catch(reason => {
-          console.log(reason);
+          console.error(reason);
           reject(reason);
         });
     });
@@ -144,5 +141,115 @@ module.exports = () => {
   };
 
   this.getSingle = id => lotoFacilModel.getSingle(id);
+
+  this.updateStatistics = refresh => {
+    // Get current statistics
+    return new Promise(async (resolve, reject) => {
+      try {
+        //#region Inicialização
+        var statistics = refresh
+          ? statisticsModel.getEmptyRecord()
+          : (await statisticsModel.getStatistics(LOTERIA)) ||
+            statisticsModel.getEmptyRecord();
+
+        var listRecords = await lotoFacilModel.getList(
+          null,
+          null,
+          statistics.ultimoJogo + 1,
+          null
+        );
+        if (listRecords.length === 0) return true;
+
+        var sequencias = refresh
+          ? {}
+          : (await sequenciaModel.getAll(LOTERIA)) || {};
+
+        var numeros = refresh
+          ? numeroModel.getEmptyRecord()
+          : (await numeroModel.getAll(LOTERIA)) || numeroModel.getEmptyRecord();
+        //# endregion
+
+        //#region Processamento
+        listRecords.forEach(element => {
+          var sequencia = [];
+          statistics.qtde++;
+          element.numeros.forEach((value, indice) => {
+            if (value) {
+              numeros[indice].qtde++;
+              numeros[indice].jogos.push(element.id);
+              sequencia.push(indice + 1);
+            } else {
+              sequencias = tratarSequencia(sequencias, sequencia, element.id);
+              sequencia = [];
+            }
+          });
+          sequencias = tratarSequencia(sequencias, sequencia, element.id);
+        });
+        statistics.ultimoJogo = listRecords[listRecords.length - 1].id;
+        //#endregion
+
+        //#region Update Sequences
+        var sequenciaUpdatePromises = [];
+        for (value in sequencias) {
+          const seqItem = sequencias[value];
+          seqItem.percentual = (seqItem.qtde / statistics.qtde) * 100;
+          sequenciaUpdatePromises.push(
+            sequenciaDadosModel.update(LOTERIA, value, { jogos: seqItem.jogos })
+          );
+          delete seqItem.jogos;
+          sequenciaUpdatePromises.push(
+            sequenciaModel.update(LOTERIA, value, seqItem)
+          );
+        }
+        await Promise.all(sequenciaUpdatePromises);
+        //# endregion
+        var numeroDadosUpdatePromises = numeros.map(value =>
+          numeroDadosModel.update(LOTERIA, value.id.toString(), {
+            jogos: value.jogos
+          })
+        );
+        await Promise.all(numeroDadosUpdatePromises);
+
+        var numeroUpdatePromises = numeros.map(value => {
+          value.percentual = (value.qtde / statistics.qtde) * 100;
+          delete value.jogos;
+          return numeroModel.update(LOTERIA, value.id.toString(), value);
+        });
+        await Promise.all(numeroUpdatePromises);
+
+        for (value in statistics.numeros) {
+          statistics.numeros[value].percentual =
+            (statistics.numeros[value].qtde / statistics.qtde) * 100;
+        }
+        if (statistics.primeiroJogo === 0) statistics.primeiroJogo = 1;
+        var result = await statisticsModel.updateStatistics(
+          LOTERIA,
+          statistics
+        );
+        resolve(result);
+        return result;
+      } catch (error) {
+        console.error(error);
+        reject(error);
+        return error;
+      }
+
+      function tratarSequencia(sequencias, sequencia, jogoId) {
+        if (sequencia.length < 2) return sequencias;
+        if (sequencias[sequencia] === undefined) {
+          sequencias[sequencia] = {
+            qtde: 1,
+            jogos: [jogoId],
+            percentual: 0.0
+          };
+        } else {
+          sequencias[sequencia].qtde++;
+          sequencias[sequencia].jogos.push(jogoId);
+        }
+        return sequencias;
+      }
+    });
+  };
+
   return this;
 };
