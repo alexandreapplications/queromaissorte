@@ -1,22 +1,24 @@
 import React from "react";
+import Box from "@material-ui/core/Box";
+import Paper from "@material-ui/core/Paper";
 import LotofacilItem from "./LotofacilItem";
-import GridList from "@material-ui/core/GridList";
 import { makeStyles } from "@material-ui/core/styles";
-import GridListTile from "@material-ui/core/GridListTile";
-import GridListTileBar from "@material-ui/core/GridListTileBar";
 import moment from "moment";
 
 const useStyles = makeStyles(theme => ({
-  root: {
-    display: "flex",
-    flexWrap: "wrap",
-    justifyContent: "space-around",
-    overflow: "hidden",
-    backgroundColor: theme.palette.background.paper
+  Jogo: {
+    margin: theme.spacing()
   },
-  GridList: {
-    width: "100%",
-    height: "100vh"
+  JogoItem: {
+    margin: 5,
+    padding: 5
+  },
+  IdentificadorJogo: {
+    margin: 5,
+    fontWeight: "bold"
+  },
+  HeaderData: {
+    flexGrow: 1
   }
 }));
 
@@ -27,25 +29,28 @@ function formataData(seconds) {
 
 function LotofacilList(props) {
   const classes = useStyles();
-  if (props.jogos && props.jogos.success) {
+  if (props.jogos) {
     return (
-      <GridList
-        cellHeight={260}
-        cols={6}
-        spacing={10}
-        className={classes.gridList}
+      <Box
+        display="flex"
+        alignContent="space-between"
+        width="100%"
+        flexWrap="wrap"
       >
-        {props.jogos.data.map(item => {
+        {props.jogos.map(item => {
           return (
-            <GridListTile key={item.id}>
-              <LotofacilItem jogo={item} key={item.id} />
-              <GridListTileBar
-                title={`${item.id} - ${formataData(item.data._seconds)}`}
-              />
-            </GridListTile>
+            <Paper key={item.id} elevation={2} className={classes.Jogo}>
+              <Box className={classes.JogoItem}>
+                <Box className={classes.IdentificadorJogo} display="flex">
+                  <div className={classes.HeaderData}>{item.id}</div>
+                  <div>{formataData(item.data._seconds)}</div>
+                </Box>
+                <LotofacilItem jogo={item} key={item.id} />
+              </Box>
+            </Paper>
           );
         })}
-      </GridList>
+      </Box>
     );
   } else {
     return <p>Loading data</p>;

@@ -3,22 +3,12 @@ import { makeStyles } from "@material-ui/core/styles";
 import Box from "@material-ui/core/Box";
 const useStyles = makeStyles(theme => ({
   checkedBox: {
-    backgroundColor: "#aaa",
-    color: "white",
     border: "1px solid orange",
-    "flex-basis": "25%",
-    margin: 5,
-    "padding-top": 5,
-    "padding-bottom": 5,
-    textAlign: "center"
-  },
-  uncheckedBox: {
-    border: "1px solid orange",
-    "flex-basis": "25%",
-    margin: 5,
-    "padding-top": 5,
-    "padding-bottom": 5,
-    textAlign: "center"
+    flexBasis: 30,
+    margin: 3,
+    padding: 3,
+    textAlign: "center",
+    fontSize: "0.8em"
   }
 }));
 function LotofacilItem(props) {
@@ -28,8 +18,7 @@ function LotofacilItem(props) {
     return (
       <Box
         display="flex"
-        alignItems="stretch"
-        alignContent="stretch"
+        alignContent="space-between"
         width="100%"
         key={inicio}
       >
@@ -37,7 +26,10 @@ function LotofacilItem(props) {
           return (
             <Box
               key={index}
-              className={element ? classes.checkedBox : classes.uncheckedBox}
+              className={classes.checkedBox}
+              bgcolor={element ? "primary.main" : "disabled.main"}
+              color={element ? "primary.contrastText" : "disabled.contrastText"}
+              borderRadius={4}
             >
               {index + inicio + 1}
             </Box>

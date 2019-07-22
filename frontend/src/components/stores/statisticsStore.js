@@ -1,12 +1,11 @@
 import { EventEmitter } from "events";
 import Dispatcher from "../../appDispatcher";
 import actionTypes from "../../actions/actionTypes";
-import { loadJogos } from "../../actions/lotofacilActions";
 
 const CHANGE_EVENT = "change";
-let _jogos = [];
+let _statistics = {};
 
-class JogoStore extends EventEmitter {
+class StatisticsStore extends EventEmitter {
   addChangeListener(callback) {
     this.on(CHANGE_EVENT, callback);
   }
@@ -19,24 +18,16 @@ class JogoStore extends EventEmitter {
     this.emit(CHANGE_EVENT);
   }
 
-  getJogos(inicio, recordCount) {
-    return _jogos.slice(inicio, inicio + recordCount);
-  }
-
-  loadJogos(inicio, recordCount) {
-    if (inicio + recordCount > _jogos.length) {
-      loadJogos(_jogos.length, recordCount);
-    }
+  getStatistics(loteria) {
+    return _statistics[loteria];
   }
 }
 
-const store = new JogoStore();
+const store = new StatisticsStore();
 Dispatcher.register(action => {
   switch (action.actionType) {
-    case actionTypes.LOAD_LOTOFACIL:
-      for (var item in action.jogos) {
-        _jogos.push(action.jogos[item]);
-      }
+    case actionTypes.LOAD_STATISTICS:
+      _statistics = action.statistics;
       store.emitChange();
       break;
     default:

@@ -1,8 +1,8 @@
 import { handleResponse, handleError } from "./apiUtils";
 const baseUrl = `${process.env.REACT_APP_API_URL}/lotofacil/`;
 
-export function getList() {
-  return fetch(baseUrl + "?initialRecord=0&recordCount=100")
+export function getList(inicio, qtde) {
+  return fetch(baseUrl + `?initialRecord=${inicio}&recordCount=${qtde}`)
     .then(handleResponse)
     .catch(handleError);
 }
