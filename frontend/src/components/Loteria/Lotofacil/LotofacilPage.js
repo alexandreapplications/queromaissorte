@@ -12,7 +12,7 @@ function LotofacilPage() {
     currentPage: 0
   });
   const [jogos, setJogos] = useState(
-    jogosStore.getJogos(currentPage.inicio, pageSize)
+    jogosStore.getJogos(currentPage.inicio + 1, pageSize)
   );
   const [statistics, setStatistics] = useState(
     statisticsStore.getStatistics(LOTERIA)
@@ -23,10 +23,15 @@ function LotofacilPage() {
     }
 
     function onJogosChange() {
-      setJogos(jogosStore.getJogos(currentPage.inicio, pageSize));
+      setJogos(jogosStore.getJogos(currentPage.inicio + 1, pageSize));
     }
+
+    if (jogos.length > 0 && jogos[0].id !== currentPage.inicio + 1) {
+      setJogos(jogosStore.getJogos(currentPage.inicio + 1, pageSize));
+    }
+
     if (jogos.length === 0) {
-      jogosStore.loadJogos(currentPage.inicio, pageSize);
+      jogosStore.loadJogos(currentPage.inicio + 1, pageSize);
     }
     jogosStore.addChangeListener(onJogosChange);
     statisticsStore.addChangeListener(onStatisticsChange);
@@ -38,7 +43,7 @@ function LotofacilPage() {
       statisticsStore.removeChangeListener(onStatisticsChange);
       jogosStore.removeChangeListener(onJogosChange);
     };
-  }, [currentPage.inicio, jogos.length]);
+  }, [currentPage.inicio, jogos]);
 
   function onPageChange(page) {
     const initialRecord = page * pageSize + 1;
@@ -47,8 +52,6 @@ function LotofacilPage() {
       currentPage: page
     };
     setCurrentPage(newPage);
-    debugger;
-    setJogos(jogosStore.getJogos(currentPage.inicio, pageSize));
   }
 
   function handlePageChange(page) {

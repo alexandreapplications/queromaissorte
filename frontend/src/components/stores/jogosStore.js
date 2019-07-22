@@ -20,13 +20,12 @@ class JogoStore extends EventEmitter {
   }
 
   getJogos(inicio, recordCount) {
-    return _jogos.slice(inicio, inicio + recordCount);
+    var fim = inicio + recordCount;
+    return _jogos.filter(x => x.id >= inicio && x.id < fim);
   }
 
   loadJogos(inicio, recordCount) {
-    if (inicio + recordCount > _jogos.length) {
-      loadJogos(_jogos.length, recordCount);
-    }
+    loadJogos(inicio, recordCount);
   }
 }
 
@@ -34,9 +33,12 @@ const store = new JogoStore();
 Dispatcher.register(action => {
   switch (action.actionType) {
     case actionTypes.LOAD_LOTOFACIL:
+      var currentIds = _jogos.map(x => x.id);
       for (var item in action.jogos) {
-        _jogos.push(action.jogos[item]);
+        if (currentIds.indexOf(action.jogos[item].id) < 0)
+          _jogos.push(action.jogos[item]);
       }
+      localStorage.setItem("lotofacilData", JSON.stringify(_jogos));
       store.emitChange();
       break;
     default:

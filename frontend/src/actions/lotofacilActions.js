@@ -2,7 +2,7 @@ import dispatcher from "../appDispatcher";
 import * as lotofacilApi from "../api/lotofacilApi";
 import actionTypes from "./actionTypes";
 
-export function loadJogos(inicio, fim) {
+export function loadJogos(inicio, recordCount) {
   var listJogos = null; //localStorage.getItem("listJogos");
   if (listJogos) {
     return new Promise(resolve => {
@@ -15,7 +15,7 @@ export function loadJogos(inicio, fim) {
       return;
     });
   }
-  return lotofacilApi.getList(inicio, fim).then(jogos => {
+  return lotofacilApi.getList(inicio, recordCount).then(jogos => {
     // if (jogos.success) {
     //   localStorage.setItem("listJogos", JSON.stringify(jogos));
     // }
