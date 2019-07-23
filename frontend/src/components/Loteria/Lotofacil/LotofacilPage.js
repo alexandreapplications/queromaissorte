@@ -17,6 +17,8 @@ function LotofacilPage() {
   const [statistics, setStatistics] = useState(
     statisticsStore.getStatistics(LOTERIA)
   );
+  const [selectedJogos, setSelectedJogos] = useState([]);
+
   useEffect(() => {
     function onStatisticsChange() {
       setStatistics(statisticsStore.getStatistics(LOTERIA));
@@ -43,7 +45,7 @@ function LotofacilPage() {
       statisticsStore.removeChangeListener(onStatisticsChange);
       jogosStore.removeChangeListener(onJogosChange);
     };
-  }, [currentPage.inicio, jogos]);
+  }, [currentPage.inicio, jogos, selectedJogos]);
 
   function onPageChange(page) {
     const initialRecord = page * pageSize + 1;
@@ -56,6 +58,17 @@ function LotofacilPage() {
 
   function handlePageChange(page) {
     onPageChange(page);
+  }
+
+  function handleAddJogo(jogo) {
+    if (selectedJogos.findIndex(x => x.id === jogo.id) >= 0) return;
+    var currentSelected = selectedJogos.slice();
+    currentSelected.push(jogo);
+    setSelectedJogos(currentSelected);
+  }
+  function handleRemoveJogo(jogo) {
+    var jogosList = selectedJogos.filter(item => item.id !== jogo.id);
+    setSelectedJogos(jogosList);
   }
 
   return (
@@ -82,8 +95,14 @@ function LotofacilPage() {
           <hr />
         </>
       )}
+      {selectedJogos.length > 0 && (
+        <>
+          <div>Selecionado</div>
+          <LotofacilList jogos={selectedJogos} selectJogo={handleRemoveJogo} />
+        </>
+      )}
       <h3>Lista dos Jogos</h3>
-      <LotofacilList jogos={jogos} />
+      <LotofacilList jogos={jogos} selectJogo={handleAddJogo} />
     </div>
   );
 }

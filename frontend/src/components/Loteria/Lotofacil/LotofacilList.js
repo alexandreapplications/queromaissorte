@@ -1,4 +1,5 @@
 import React from "react";
+import propTypes from "prop-types";
 import Box from "@material-ui/core/Box";
 import Paper from "@material-ui/core/Paper";
 import LotofacilItem from "./LotofacilItem";
@@ -42,7 +43,15 @@ function LotofacilList(props) {
             <Paper key={item.id} elevation={2} className={classes.Jogo}>
               <Box className={classes.JogoItem}>
                 <Box className={classes.IdentificadorJogo} display="flex">
-                  <div className={classes.HeaderData}>{item.id}</div>
+                  <div className={classes.HeaderData}>
+                    <button
+                      onClick={() => {
+                        props.selectJogo(item);
+                      }}
+                    >
+                      {item.id}
+                    </button>
+                  </div>
                   <div>{formataData(item.data._seconds)}</div>
                 </Box>
                 <LotofacilItem jogo={item} key={item.id} />
@@ -56,4 +65,9 @@ function LotofacilList(props) {
     return <p>Loading data</p>;
   }
 }
+
+LotofacilList.propTypes = {
+  selectJogo: propTypes.func.isRequired
+};
+
 export default LotofacilList;
